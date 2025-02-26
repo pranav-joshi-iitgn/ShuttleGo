@@ -8,7 +8,8 @@ CREATE TABLE Member (
     Image BLOB,
     DateOfBirth DATE NOT NULL,
     IITGNEmail VARCHAR(255) NOT NULL UNIQUE,
-    MobileNumber VARCHAR(10) NOT NULL
+    MobileNumber VARCHAR(10) NOT NULL,
+    check ((IITGNEmail like "%@iitgn.ac.in") and not (IITGNEmail like "% %"))
 );
 CREATE TABLE Bus (
     BusID INT PRIMARY KEY,
@@ -33,6 +34,7 @@ CREATE TABLE Schedule (
     RouteID INT,
     StartTime TIME NOT NULL,
     EndTime TIME NOT NULL,
+    DepartueDay DATE NOT NULL,
     FOREIGN KEY (BusID) REFERENCES Bus(BusID),
     FOREIGN KEY (DriverID) REFERENCES Driver(DriverID),
     FOREIGN KEY (RouteID) REFERENCES Route(RouteID)
@@ -41,13 +43,13 @@ CREATE TABLE Bookings (
     BookingID INT PRIMARY KEY,
     JourneyID INT,
     UserID INT,
-    JorneyDate DATE NOT NULL,
     Seat INT,
    FOREIGN KEY (JourneyID) REFERENCES
   Schedule(JourneyID),
   FOREIGN KEY (UserID) REFERENCES
  Member(MemberID)
 );
+
 CREATE TABLE Boarded (
     BookingID INT PRIMARY KEY,
     JourneyID INT,
@@ -89,6 +91,41 @@ CREATE TABLE Feedback (
     FOREIGN KEY (BusID) REFERENCES Bus(BusID)
 );
 
+-- Inserting data
+INSERT INTO Member (MemberID, Name, Image, DateOfBirth, IITGNEmail, MobileNumber)
+VALUES (1, 'ABCD', NULL, '2025-02-26', 'abcd@iitgn.ac.in', '1234567890');
+INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
+VALUES (1, 'GJ01ABC1234', 50);
+INSERT INTO Driver (DriverID, DriverName, DriverMobileNumber)
+VALUES (1, 'XYZ', '1234567890');
+INSERT INTO Route (RouteID, StartLocation, EndLocation, IntermediateLocations)
+VALUES (1, 'IITGN', 'Kudasan', 'Dholakuva Metro Station, Rakshashakti Circle');
+INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
+VALUES (1, 1, 1, 1, '08:00:00', '08:30:00',"2025-02-28");
+INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
+VALUES (1, 1, 1, 1);
+INSERT INTO Boarded (BookingID, JourneyID, JorneyDate, Seat)
+VALUES (1, 1, '2025-02-26', true);
+INSERT INTO LiveLocation (LocationID, BusID, Latitude, Longitude, LastUpdatedTime)
+VALUES (1, 1, 23.123, 72.123, '08:00:00');
+INSERT INTO Penalty (PenaltyID, UserID, NumberOfMisses, PenaltyAmount, PenaltyDate)
+VALUES (1, 1, 3, 100, '2025-02-26');
+INSERT INTO Authorities (AuthorityID, Name, Email, Password)
+VALUES (1, 'PQR', 'pqr@iitgn.ac.in', 'hashed_password');
+INSERT INTO Feedback (FeedbackID, UserID, BusID, FeedbackText, Rating, FeedbackDate)
+VALUES (1, 1, 1, 'Good Service', 4, '2025-02-26');
+
+
+INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
+VALUES (1, 1, 1, 1, '03:00:00', '08:30:00',"2025-02-27");
+
+
+
+CREATE VIEW today as (SELECT DATE(NOW()));
+CREATE VIEW rn as (SELECT NOW());
+CREATE VIEW tommorrow as (select DATE(NOW()) + INTERVAL 1 DAY);
+CREATE VIEW tommorrow_schedule as (SELECT * from Schedule where DepartueDay = (select * from tommorrow));
+
 
 delimiter //
 
@@ -104,49 +141,37 @@ INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
 VALUES (bid, brn, cap);
 END //
 
-CREATE PROCEDURE create_new_driver()
+CREATE PROCEDURE create_new_driver(IN did INT, IN nam VARCHAR(255),MOB VARCHAR(10))
 BEGIN
 INSERT INTO Driver (DriverID, DriverName, DriverMobileNumber)
-VALUES (1, 'XYZ', '1234567890');
+VALUES (did, nam, mod);
 END//
 
-CREATE PROCEDURE create_new_route()
+CREATE PROCEDURE create_new_route(IN rid INT, IN sl VARCHAR(255), IN el VARCHAR(255), IN intloc VARCHAR(255))
 BEGIN
 INSERT INTO Route (RouteID, StartLocation, EndLocation, IntermediateLocations)
-VALUES (1, 'IITGN', 'Kudasan', 'Dholakuva Metro Station, Rakshashakti Circle');
+VALUES (rid, sl, el, intloc);
 END//
 
 
-CREATE PROCEDURE create_new_schedule()
+CREATE PROCEDURE create_new_schedule(IN jid INT, IN bid INT, In did INT, IN rid INT, IN st TIME, IN et INME, IN dd DATE)
 BEGIN
-INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime)
-VALUES (1, 1, 1, 1, '08:00:00', '08:30:00');
+INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
+VALUES (jid, bid, did, rid, st, et, dd);
 END//
 
-CREATE PROCEDURE create_new_booking()
+CREATE PROCEDURE create_new_booking(IN bid INT, IN jid INT, IN usid INT, IN st INT)
 BEGIN
-INSERT INTO Bookings (BookingID, JourneyID, UserID, JorneyDate, Seat)
-VALUES (1, 1, 1, '2025-02-26', 1);
+INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
+VALUES (bid, jid, usid, st);
 END//
+
+CREATE PROCEDURE verify_new_booking(IN bid INT, IN jid INT, IN usid INT, IN st INT)
+WITH 
+journ as (SELECT * from Schedule where jid = JourneyID),
+seated as (SELECT count(*) as val from Bookings where JourneyID = jid and (Seat = st or usid = UserID))
+SELECT 1-count(*) from journ,seated where val > 0 or not (DepartueDay > DATE(NOW()) or StartTime > TIME(NOW()) + INTERVAL 3 HOUR);
+END //
 
 delimiter ;
 
-CREATE PROCEDURE create_new_boarded ()
-INSERT INTO Boarded (BookingID, JourneyID, JorneyDate, Seat)
-VALUES (1, 1, '2025-02-26', true);
-
-CREATE PROCEDURE create_new_live_location ()
-INSERT INTO LiveLocation (LocationID, BusID, Latitude, Longitude, LastUpdatedTime)
-VALUES (1, 1, 23.123, 72.123, '08:00:00');
-
-CREATE PROCEDURE create_new_penalty ()
-INSERT INTO Penalty (PenaltyID, UserID, NumberOfMisses, PenaltyAmount, PenaltyDate)
-VALUES (1, 1, 3, 100, '2025-02-26');
-
-CREATE PROCEDURE create_new_authority ()
-INSERT INTO Authorities (AuthorityID, Name, Email, Password)
-VALUES (1, 'PQR', 'pqr@iitgn.ac.in', 'hashed_password');
-
-CREATE PROCEDURE create_new_feedback ()
-INSERT INTO Feedback (FeedbackID, UserID, BusID, FeedbackText, Rating, FeedbackDate)
-VALUES (1, 1, 1, 'Good Service', 4, '2025-02-26');
