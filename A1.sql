@@ -3,7 +3,7 @@ USE ShuttleGo;
 START TRANSACTION;
 
 CREATE TABLE Member (
-    MemberID INT PRIMARY KEY,
+    MemberID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255) NOT NULL,
     Image BLOB,
     DateOfBirth DATE NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE Bus (
     Capacity INT
 );
 CREATE TABLE Driver (
-    DriverID INT PRIMARY KEY,
+    DriverID INT PRIMARY KEY AUTO_INCREMENT,
     DriverName VARCHAR(255) NOT NULL,
     DriverMobileNumber VARCHAR(10) NOT NULL
 );
@@ -28,7 +28,7 @@ CREATE TABLE Route (
     IntermediateLocations VARCHAR(255)
 );
 CREATE TABLE Schedule (
-    JourneyID INT PRIMARY KEY,
+    JourneyID INT PRIMARY KEY AUTO_INCREMENT,
     BusID INT,
     DriverID INT,
     RouteID INT,
@@ -40,7 +40,7 @@ CREATE TABLE Schedule (
     FOREIGN KEY (RouteID) REFERENCES Route(RouteID)
 );
 CREATE TABLE Bookings (
-    BookingID INT PRIMARY KEY,
+    BookingID INT PRIMARY KEY AUTO_INCREMENT,
     JourneyID INT,
     UserID INT,
     Seat INT,
@@ -51,7 +51,7 @@ CREATE TABLE Bookings (
 );
 
 CREATE TABLE Boarded (
-    BookingID INT PRIMARY KEY,
+    BookingID INT PRIMARY KEY AUTO_INCREMENT,
     JourneyID INT,
     JorneyDate DATE NOT NULL,
     Boarded BOOLEAN,
@@ -59,7 +59,7 @@ CREATE TABLE Boarded (
     Schedule(JourneyID)
 );
 CREATE TABLE LiveLocation (
-    LocationID INT PRIMARY KEY,
+    LocationID INT PRIMARY KEY AUTO_INCREMENT,
     BusID INT,
     Latitude FLOAT,
     Longitude FLOAT,
@@ -67,7 +67,7 @@ CREATE TABLE LiveLocation (
     FOREIGN KEY (BusID) REFERENCES Bus(BusID)
 );
 CREATE TABLE Penalty (
-    PenaltyID INT PRIMARY KEY,
+    PenaltyID INT PRIMARY KEY AUTO_INCREMENT,
     UserID INT,
     NumberOfMisses INT,
     PenaltyAmount INT,
@@ -75,13 +75,13 @@ CREATE TABLE Penalty (
     FOREIGN KEY (UserID) REFERENCES Member(MemberID)
 );
 CREATE TABLE Authorities (
-    AuthorityID INT PRIMARY KEY,
+    AuthorityID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255) NOT NULL,
     Email VARCHAR(255) NOT NULL UNIQUE,
     Password VARCHAR(255) NOT NULL
 );
 CREATE TABLE Feedback (
-    FeedbackID INT PRIMARY KEY,
+    FeedbackID INT PRIMARY KEY AUTO_INCREMENT,
     UserID INT,
     BusID INT,
     FeedbackText TEXT,
@@ -141,10 +141,10 @@ INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
 VALUES (bid, brn, cap);
 END //
 
-CREATE PROCEDURE create_new_driver(IN did INT, IN nam VARCHAR(255),MOB VARCHAR(10))
+CREATE PROCEDURE create_new_driver(IN nam VARCHAR(255),MOB VARCHAR(10))
 BEGIN
-INSERT INTO Driver (DriverID, DriverName, DriverMobileNumber)
-VALUES (did, nam, mod);
+INSERT INTO Driver (DriverName, DriverMobileNumber)
+VALUES (nam, mod);
 END//
 
 CREATE PROCEDURE create_new_route(IN rid INT, IN sl VARCHAR(255), IN el VARCHAR(255), IN intloc VARCHAR(255))
@@ -154,19 +154,19 @@ VALUES (rid, sl, el, intloc);
 END//
 
 
-CREATE PROCEDURE create_new_schedule(IN jid INT, IN bid INT, In did INT, IN rid INT, IN st TIME, IN et INME, IN dd DATE)
+CREATE PROCEDURE create_new_schedule(IN bid INT, In did INT, IN rid INT, IN st TIME, IN et INME, IN dd DATE)
 BEGIN
-INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
-VALUES (jid, bid, did, rid, st, et, dd);
+INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
+VALUES (bid, did, rid, st, et, dd);
 END//
 
-CREATE PROCEDURE create_new_booking(IN bid INT, IN jid INT, IN usid INT, IN st INT)
+CREATE PROCEDURE create_new_booking(IN jid INT, IN usid INT, IN st INT)
 BEGIN
-INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
-VALUES (bid, jid, usid, st);
+INSERT INTO Bookings (JourneyID, UserID, Seat)
+VALUES (jid, usid, st);
 END//
 
-CREATE PROCEDURE verify_new_booking(IN bid INT, IN jid INT, IN usid INT, IN st INT)
+CREATE PROCEDURE verify_new_booking(IN jid INT, IN usid INT, IN st INT)
 WITH 
 journ as (SELECT * from Schedule where jid = JourneyID),
 seated as (SELECT count(*) as val from Bookings where JourneyID = jid and (Seat = st or usid = UserID))
@@ -174,4 +174,3 @@ SELECT 1-count(*) from journ,seated where val > 0 or not (DepartueDay > DATE(NOW
 END //
 
 delimiter ;
-
