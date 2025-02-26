@@ -92,21 +92,17 @@ CREATE TABLE Feedback (
 
 delimiter //
 
-CREATE PROCEDURE create_new_user(IN mid, IN nam, IN im, IN dob, IN email, IN mob)
+CREATE PROCEDURE create_new_user(IN mid INT, IN nam VARCHAR(255), IN im BLOB, IN dob DATE, IN email VARCHAR(255), IN mob VARCHAR(10))
 BEGIN
 INSERT INTO Member (MemberID, Name, Image, DateOfBirth, IITGNEmail, MobileNumber)
 VALUES (mid, nam, im, dob, email, mob);
 END //
-
--- (1, 'ABCD', NULL, '2025-02-26', 'abcd@iitgn.ac.in', '1234567890');
 
 CREATE PROCEDURE create_new_bus(IN bid INT, IN brn VARCHAR(11), IN cap INT)
 BEGIN
 INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
 VALUES (bid, brn, cap);
 END //
-
-delimiter ;
 
 CREATE PROCEDURE create_new_driver()
 BEGIN
