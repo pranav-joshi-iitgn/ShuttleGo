@@ -92,6 +92,18 @@ CREATE TABLE Feedback (
     FOREIGN KEY (BusID) REFERENCES Bus(BusID)
 );
 
+CREATE TABLE Tickets (
+    TicketID VARCHAR(255) PRIMARY KEY,
+    BookingID INT UNIQUE,
+    DepartueDay DATE,
+    StartTime TIME,
+    EndTime TIME,
+    SeatNumber INT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID)
+);
+
+
 CREATE TABLE ReturnCode (
     val BOOLEAN
 );
@@ -217,5 +229,33 @@ BEGIN
     SET Latitude = lat, Longitude = lon, LastUpdatedTime = NOW()
     WHERE BusID = bus_id;
 END //
+
+
+CREATE PROCEDURE GenerateTicket(IN bid INT) -- Generates a ticket, returns journey info to user, adds the ticket to the 'tickets' table for conductor to verify.
+BEGIN
+    DECLARE ticketID VARCHAR(255);
+    DECLARE depDay DATE;
+    DECLARE st TIME;
+    DECLARE et TIME;
+    DECLARE seatNumber INT;
+    DECLARE startLoc VARCHAR(255);
+    DECLARE endLoc VARCHAR(255);
+
+    SELECT s.DepartueDay, s.StartTime, s.EndTime, b.Seat, r.StartLocation, r.EndLocation
+    INTO depDay, st, et, seatNumber, startLoc, endLoc
+    FROM Bookings b
+    JOIN Schedule s ON b.JourneyID = s.JourneyID
+    JOIN Route r ON s.RouteID = r.RouteID
+    WHERE b.BookingID = bid;
+
+    SET ticketID = CONCAT('TICKET-', bid, '-', UNIX_TIMESTAMP(NOW()));
+
+    INSERT INTO Tickets (TicketID, BookingID, DepartueDay, StartTime, EndTime, SeatNumber)
+    VALUES (ticketID, bid, depDay, st, et, seatNumber);
+
+    SELECT ticketID AS TicketIdentifier, depDay AS Date, st AS Start_Time, et AS End_Time, 
+           seatNumber AS Seat_Number, startLoc AS Start_Location, endLoc AS End_Location;
+END //
+
 
 delimiter ;
