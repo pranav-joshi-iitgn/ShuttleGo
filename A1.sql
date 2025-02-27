@@ -202,4 +202,20 @@ INSERT INTO Boarding (BookingID,JourneyID,JourneyDate,Boarded)
 SELECT BookingID,Bookings.JourneyID,DepartueDay,seated FROM Bookings,Schedule WHERE BookingID = bid and Bookings.JourneyID = Schedule.JourneyID;
 END//
 
+CREATE PROCEDURE GetLiveLocation(IN bus_id INT)
+BEGIN
+    SELECT Latitude, Longitude, LastUpdatedTime
+    FROM LiveLocation
+    WHERE BusID = bus_id
+    ORDER BY LastUpdatedTime DESC
+    LIMIT 1;
+END //
+
+CREATE PROCEDURE UpdateLiveLocation(IN bus_id INT, IN lat FLOAT, IN lon FLOAT)
+BEGIN
+    UPDATE LiveLocation
+    SET Latitude = lat, Longitude = lon, LastUpdatedTime = NOW()
+    WHERE BusID = bus_id;
+END //
+
 delimiter ;
