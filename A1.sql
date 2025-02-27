@@ -50,14 +50,15 @@ CREATE TABLE Bookings (
  Member(MemberID)
 );
 
-CREATE TABLE Boarded (
-    BookingID INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Boarding (
+    BookingID INT PRIMARY KEY,
     JourneyID INT,
-    JorneyDate DATE NOT NULL,
+    JourneyDate DATE NOT NULL,
     Boarded BOOLEAN,
-    FOREIGN KEY (JourneyID) REFERENCES
-    Schedule(JourneyID)
+    FOREIGN KEY (JourneyID) REFERENCES Schedule(JourneyID),
+    FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID)
 );
+
 CREATE TABLE LiveLocation (
     LocationID INT PRIMARY KEY AUTO_INCREMENT,
     BusID INT,
@@ -104,7 +105,7 @@ INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, D
 VALUES (1, 1, 1, 1, '08:00:00', '08:30:00',"2025-02-28");
 INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
 VALUES (1, 1, 1, 1);
-INSERT INTO Boarded (BookingID, JourneyID, JorneyDate, Seat)
+INSERT INTO Boarding (BookingID, JourneyID, JourneyDate, Boarded)
 VALUES (1, 1, '2025-02-26', true);
 INSERT INTO LiveLocation (LocationID, BusID, Latitude, Longitude, LastUpdatedTime)
 VALUES (1, 1, 23.123, 72.123, '08:00:00');
@@ -126,8 +127,13 @@ CREATE VIEW rn as (SELECT NOW());
 CREATE VIEW tommorrow as (select DATE(NOW()) + INTERVAL 1 DAY);
 CREATE VIEW tommorrow_schedule as (SELECT * from Schedule where DepartueDay = (select * from tommorrow));
 
-
 delimiter //
+
+CREATE PROCEDURE last_30_days(IN usid INT)
+BEGIN
+SELECT * FROM Boarding WHERE BookingID IN (SELECT BookingID FROM Bookings WHERE usid = UserID and JourneyDate < DATE(NOW()) and JourneyDate > DATE(NOW()) - INTERVAL 30 DAY);
+END //
+
 
 CREATE PROCEDURE create_new_user(IN mid INT, IN nam VARCHAR(255), IN im BLOB, IN dob DATE, IN email VARCHAR(255), IN mob VARCHAR(10))
 BEGIN
@@ -154,7 +160,7 @@ VALUES (rid, sl, el, intloc);
 END//
 
 
-CREATE PROCEDURE create_new_schedule(IN bid INT, In did INT, IN rid INT, IN st TIME, IN et INME, IN dd DATE)
+CREATE PROCEDURE create_new_schedule(IN bid INT, IN did INT, IN rid INT, IN st TIME, IN et TIME, IN dd DATE)
 BEGIN
 INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
 VALUES (bid, did, rid, st, et, dd);
@@ -172,5 +178,11 @@ journ as (SELECT * from Schedule where jid = JourneyID),
 seated as (SELECT count(*) as val from Bookings where JourneyID = jid and (Seat = st or usid = UserID))
 SELECT 1-count(*) from journ,seated where val > 0 or not (DepartueDay > DATE(NOW()) or StartTime > TIME(NOW()) + INTERVAL 3 HOUR);
 END //
+
+CREATE PROCEDURE create_new_boarding(IN bid INT, IN seated BOOLEAN)
+BEGIN
+INSERT INTO Boarding (BookingID,JourneyID,JourneyDate,Boarded)
+SELECT BookingID,Bookings.JourneyID,DepartueDay,seated FROM Bookings,Schedule WHERE BookingID = bid and Bookings.JourneyID = Schedule.JourneyID;
+END//
 
 delimiter ;
