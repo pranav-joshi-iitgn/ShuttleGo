@@ -92,6 +92,12 @@ CREATE TABLE Feedback (
     FOREIGN KEY (BusID) REFERENCES Bus(BusID)
 );
 
+CREATE TABLE ReturnCode (
+    val BOOLEAN
+);
+
+INSERT INTO ReturnCode VALUES (true);
+
 -- Inserting data
 INSERT INTO Member (MemberID, Name, Image, DateOfBirth, IITGNEmail, MobileNumber)
 VALUES (1, 'ABCD', NULL, '2025-02-26', 'abcd@iitgn.ac.in', '1234567890');
@@ -170,6 +176,17 @@ CREATE PROCEDURE create_new_booking(IN jid INT, IN usid INT, IN st INT)
 BEGIN
 INSERT INTO Bookings (JourneyID, UserID, Seat)
 VALUES (jid, usid, st);
+END//
+
+CREATE PROCEDURE cancel_booking(IN bid INT)
+BEGIN
+CREATE TEMPORARY TABLE a as (SELECT (DepartueDay > DATE(NOW()) or StartTime > (TIME(NOW()) + INTERVAL 3 HOUR)) as val from Schedule where JourneyID in (SELECT JourneyID FROM Bookings where BookingID = bid));
+CREATE TEMPORARY TABLE b as (SELECT (count(*) > 0) as val from Bookings where BookingID = bid);
+DELETE FROM Bookings WHERE BookingID = bid and (select * from a);
+UPDATE ReturnCode SET val = (true in (select a.val and b.val from a,b));
+DROP TABLE a;
+DROP TABLE b;
+SELECT * FROM ReturnCode;
 END//
 
 CREATE PROCEDURE verify_new_booking(IN jid INT, IN usid INT, IN st INT)
