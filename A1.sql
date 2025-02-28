@@ -158,10 +158,10 @@ INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
 VALUES (bid, brn, cap);
 END //
 
-CREATE PROCEDURE create_new_driver(IN nam VARCHAR(255),MOB VARCHAR(10))
+CREATE PROCEDURE create_new_driver(IN nam VARCHAR(255),mob VARCHAR(10))
 BEGIN
 INSERT INTO Driver (DriverName, DriverMobileNumber)
-VALUES (nam, mod);
+VALUES (nam, mob);
 END//
 
 CREATE PROCEDURE create_new_route(IN rid INT, IN sl VARCHAR(255), IN el VARCHAR(255), IN intloc VARCHAR(255))
