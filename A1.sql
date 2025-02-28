@@ -110,29 +110,6 @@ CREATE TABLE ReturnCode (
 
 INSERT INTO ReturnCode VALUES (true);
 
--- Inserting data
-INSERT INTO Member (MemberID, Name, Image, DateOfBirth, IITGNEmail, MobileNumber)
-VALUES (1, 'ABCD', NULL, '2025-02-26', 'abcd@iitgn.ac.in', '1234567890');
-INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
-VALUES (1, 'GJ01ABC1234', 50);
-INSERT INTO Driver (DriverID, DriverName, DriverMobileNumber)
-VALUES (1, 'XYZ', '1234567890');
-INSERT INTO Route (RouteID, StartLocation, EndLocation, IntermediateLocations)
-VALUES (1, 'IITGN', 'Kudasan', 'Dholakuva Metro Station, Rakshashakti Circle');
-INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartureDay)
-VALUES (1, 1, 1, 1, '20:00:00', '20:30:00',"2025-02-28");
-INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
-VALUES (1, 1, 1, 1);
-INSERT INTO LiveLocation (LocationID, BusID, Latitude, Longitude, LastUpdatedTime)
-VALUES (1, 1, 23.123, 72.123, '08:00:00');
-INSERT INTO Penalty (PenaltyID, UserID, NumberOfMisses, PenaltyAmount, PenaltyDate)
-VALUES (1, 1, 3, 100, '2025-02-26');
-INSERT INTO Authorities (AuthorityID, Name, Email, Password)
-VALUES (1, 'PQR', 'pqr@iitgn.ac.in', 'hashed_password');
-INSERT INTO Feedback (FeedbackID, UserID, BusID, FeedbackText, Rating, FeedbackDate)
-VALUES (1, 1, 1, 'Good Service', 4, '2025-02-26');
-
-
 CREATE VIEW today as (SELECT DATE(NOW()));
 CREATE VIEW rn as (SELECT NOW());
 CREATE VIEW tommorrow as (select DATE(NOW()) + INTERVAL 1 DAY);
