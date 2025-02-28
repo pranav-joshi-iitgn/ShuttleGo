@@ -28,3 +28,5 @@ _Aditya Mangla, Jaidev Sanjay Khalane, Pranav Joshi, Tapananshu Gandhi, Vannsh J
 ## Database Overview
 
 ![image](A1_db.png)
+
+For our reference only.
