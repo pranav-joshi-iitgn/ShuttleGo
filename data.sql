@@ -56,7 +56,7 @@ INSERT INTO Route (RouteID, StartLocation, EndLocation, IntermediateLocations) V
 (205, 'NID', 'IITGN', 'Ashram Road, Paldi');
 
 -- Schedule Table
-INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay) VALUES
+INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartureDay) VALUES
 (1, 1, 101, '07:00:00', '08:30:00', '2025-03-01'),
 (2, 2, 102, '08:00:00', '09:00:00', '2025-03-01'),
 (3, 3, 103, '09:00:00', '10:30:00', '2025-03-01'),
