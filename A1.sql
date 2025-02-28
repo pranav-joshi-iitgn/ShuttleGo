@@ -1,4 +1,4 @@
-delete database ShuttleGo;
+drop database ShuttleGo;
 create database ShuttleGo;
 USE ShuttleGo;
 
@@ -13,7 +13,7 @@ CREATE TABLE Member (
 );
 CREATE TABLE Bus (
     BusID INT PRIMARY KEY AUTO_INCREMENT,
-    BusRegistrationNumber VARCHAR(11) NOT NULL,
+    BusRegistrationNumber VARCHAR(11) NOT NULL UNIQUE,
     Capacity INT
 );
 CREATE TABLE Driver (
