@@ -25,3 +25,6 @@ _Aditya Mangla, Jaidev Sanjay Khalane, Pranav Joshi, Tapananshu Gandhi, Vannsh J
     3. Addition of Authentication using IITGN Email ID and the corresponding password.
     4. Uniqueness of the seat numbers and selection of seat numbers will also be incorporated with the frontend and Python backend.
 
+## Database Overview
+
+![image](A1_db.png)
