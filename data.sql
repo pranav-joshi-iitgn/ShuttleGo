@@ -1,5 +1,5 @@
--- Member Table
-INSERT INTO Member (Name, DateOfBirth, IITGNEmail, MobileNumber) VALUES
+-- Passanger Table
+INSERT INTO Passenger (Name, DateOfBirth, IITGNEmail, MobileNumber) VALUES
 ('Alice Sharma', '2000-05-15', 'alice.sharma@iitgn.ac.in', '9876543210'),
 ('Bob Patel', '1999-12-01', 'bob.patel@iitgn.ac.in', '8765432109'),
 ('Charlie Singh', '2001-03-10', 'charlie.singh@iitgn.ac.in', '7654321098'),
