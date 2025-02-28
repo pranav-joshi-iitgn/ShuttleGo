@@ -14,7 +14,7 @@ CREATE TABLE Passenger (
 CREATE TABLE Bus (
     BusID INT PRIMARY KEY AUTO_INCREMENT,
     BusRegistrationNumber VARCHAR(11) NOT NULL UNIQUE,
-    Capacity INT
+    Capacity INT NOT NULL
 );
 CREATE TABLE Driver (
     DriverID INT PRIMARY KEY AUTO_INCREMENT,
@@ -41,9 +41,9 @@ CREATE TABLE Schedule (
 );
 CREATE TABLE Bookings (
     BookingID INT PRIMARY KEY AUTO_INCREMENT,
-    JourneyID INT,
-    UserID INT,
-    Seat INT,
+    JourneyID INT NOT NULL,
+    UserID INT NOT NULL,
+    Seat INT NOT NULL,
    FOREIGN KEY (JourneyID) REFERENCES
   Schedule(JourneyID),
   FOREIGN KEY (UserID) REFERENCES
@@ -52,7 +52,7 @@ CREATE TABLE Bookings (
 
 CREATE TABLE Boarding (
     BookingID INT PRIMARY KEY,
-    JourneyID INT,
+    JourneyID INT NOT NULL,
     JourneyDate DATE NOT NULL,
     Boarded BOOLEAN,
     FOREIGN KEY (JourneyID) REFERENCES Schedule(JourneyID),
@@ -61,17 +61,17 @@ CREATE TABLE Boarding (
 
 CREATE TABLE LiveLocation (
     LocationID INT PRIMARY KEY AUTO_INCREMENT,
-    BusID INT,
-    Latitude FLOAT,
-    Longitude FLOAT,
+    BusID INT NOT NULL,
+    Latitude FLOAT NOT NULL,
+    Longitude FLOAT NOT NULL,
     LastUpdatedTime TIME,
     FOREIGN KEY (BusID) REFERENCES Bus(BusID)
 );
 CREATE TABLE Penalty (
     PenaltyID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT,
-    NumberOfMisses INT,
-    PenaltyAmount INT,
+    UserID INT NOT NULL,
+    NumberOfMisses INT NOT NULL,
+    PenaltyAmount INT NOT NULL,
     PenaltyDate DATE,
     FOREIGN KEY (UserID) REFERENCES Passenger(PassengerID)
 );
@@ -83,27 +83,27 @@ CREATE TABLE Authorities (
 );
 CREATE TABLE Feedback (
     FeedbackID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT,
-    BusID INT,
+    UserID INT NOT NULL,
+    BusID INT NOT NULL,
     FeedbackText TEXT,
     Rating INT,
-    FeedbackDate DATE,
+    FeedbackDate DATE NOT NULL,
     FOREIGN KEY (UserID) REFERENCES Passenger(PassengerID),
     FOREIGN KEY (BusID) REFERENCES Bus(BusID)
 );
 
 CREATE TABLE Tickets (
     TicketID VARCHAR(255) PRIMARY KEY,
-    BookingID INT UNIQUE,
-    Departure_Date DATE,
-    StartTime TIME,
+    BookingID INT UNIQUE NOT NULL,
+    Departure_Date DATE NOT NULL,
+    StartTime TIME NOT NULL,
     EndTime TIME,
-    SeatNumber INT,
+    SeatNumber INT NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID)
 );
 
-
+-- This is just a 1*1 table used as a variable.
 CREATE TABLE ReturnCode (
     val BOOLEAN
 );
