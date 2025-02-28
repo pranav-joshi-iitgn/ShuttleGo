@@ -12,7 +12,7 @@ CREATE TABLE Member (
     check ((IITGNEmail like "%@iitgn.ac.in") and not (IITGNEmail like "% %"))
 );
 CREATE TABLE Bus (
-    BusID INT PRIMARY KEY,
+    BusID INT PRIMARY KEY AUTO_INCREMENT,
     BusRegistrationNumber VARCHAR(11) NOT NULL,
     Capacity INT
 );
@@ -152,10 +152,10 @@ INSERT INTO Member (MemberID, Name, Image, DateOfBirth, IITGNEmail, MobileNumber
 VALUES (mid, nam, im, dob, email, mob);
 END //
 
-CREATE PROCEDURE create_new_bus(IN bid INT, IN brn VARCHAR(11), IN cap INT)
+CREATE PROCEDURE create_new_bus(IN brn VARCHAR(11), IN cap INT)
 BEGIN
-INSERT INTO Bus (BusID, BusRegistrationNumber, Capacity)
-VALUES (bid, brn, cap);
+INSERT INTO Bus (BusRegistrationNumber, Capacity)
+VALUES (brn, cap);
 END //
 
 CREATE PROCEDURE create_new_driver(IN nam VARCHAR(255),mob VARCHAR(10))
