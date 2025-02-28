@@ -119,7 +119,7 @@ INSERT INTO Driver (DriverID, DriverName, DriverMobileNumber)
 VALUES (1, 'XYZ', '1234567890');
 INSERT INTO Route (RouteID, StartLocation, EndLocation, IntermediateLocations)
 VALUES (1, 'IITGN', 'Kudasan', 'Dholakuva Metro Station, Rakshashakti Circle');
-INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
+INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartureDay)
 VALUES (1, 1, 1, 1, '20:00:00', '20:30:00',"2025-02-28");
 INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
 VALUES (1, 1, 1, 1);
@@ -136,7 +136,7 @@ VALUES (1, 1, 1, 'Good Service', 4, '2025-02-26');
 CREATE VIEW today as (SELECT DATE(NOW()));
 CREATE VIEW rn as (SELECT NOW());
 CREATE VIEW tommorrow as (select DATE(NOW()) + INTERVAL 1 DAY);
-CREATE VIEW tommorrow_schedule as (SELECT * from Schedule where DepartueDay = (select * from tommorrow));
+CREATE VIEW tommorrow_schedule as (SELECT * from Schedule where DepartureDay = (select * from tommorrow));
 
 delimiter //
 
@@ -173,7 +173,7 @@ END//
 
 CREATE PROCEDURE create_new_schedule(IN bid INT, IN did INT, IN rid INT, IN st TIME, IN et TIME, IN dd DATE)
 BEGIN
-INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
+INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartureDay)
 VALUES (bid, did, rid, st, et, dd);
 END//
 
