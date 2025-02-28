@@ -162,7 +162,7 @@ END//
 
 CREATE PROCEDURE cancel_booking(IN bid INT)
 BEGIN
-CREATE TEMPORARY TABLE a as (SELECT (DepartueDay > DATE(NOW()) or StartTime > (TIME(NOW()) + INTERVAL 3 HOUR)) as val from Schedule where JourneyID in (SELECT JourneyID FROM Bookings where BookingID = bid));
+CREATE TEMPORARY TABLE a as (SELECT (DepartureDay > DATE(NOW()) or StartTime > (TIME(NOW()) + INTERVAL 3 HOUR)) as val from Schedule where JourneyID in (SELECT JourneyID FROM Bookings where BookingID = bid));
 CREATE TEMPORARY TABLE b as (SELECT (count(*) > 0) as val from Bookings where BookingID = bid);
 DELETE FROM Bookings WHERE BookingID = bid and (select * from a);
 UPDATE ReturnCode SET val = (true in (select a.val and b.val from a,b));
@@ -175,13 +175,13 @@ CREATE PROCEDURE verify_new_booking(IN jid INT, IN usid INT, IN st INT)
 WITH 
 journ as (SELECT * from Schedule where jid = JourneyID),
 seated as (SELECT count(*) as val from Bookings where JourneyID = jid and (Seat = st or usid = UserID))
-SELECT 1-count(*) from journ,seated where val > 0 or not (DepartueDay > DATE(NOW()) or StartTime > TIME(NOW()) + INTERVAL 3 HOUR);
+SELECT 1-count(*) from journ,seated where val > 0 or not (DepartureDay > DATE(NOW()) or StartTime > TIME(NOW()) + INTERVAL 3 HOUR);
 END //
 
 CREATE PROCEDURE create_new_boarding(IN bid INT, IN seated BOOLEAN)
 BEGIN
 INSERT INTO Boarding (BookingID,JourneyID,JourneyDate,Boarded)
-SELECT BookingID,Bookings.JourneyID,DepartueDay,seated FROM Bookings,Schedule WHERE BookingID = bid and Bookings.JourneyID = Schedule.JourneyID;
+SELECT BookingID,Bookings.JourneyID,DepartureDay,seated FROM Bookings,Schedule WHERE BookingID = bid and Bookings.JourneyID = Schedule.JourneyID;
 END//
 
 CREATE PROCEDURE GetLiveLocation(IN bus_id INT)
