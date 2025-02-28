@@ -263,7 +263,6 @@ BEGIN
     DECLARE journeyID INT;
     DECLARE isValid BOOLEAN DEFAULT FALSE;
 
-    -- Check if the ticket exists and fetch journey details
     SELECT t.DepartueDay, t.StartTime, t.EndTime, t.SeatNumber, 
            r.StartLocation, r.EndLocation, t.BookingID, b.JourneyID
     INTO depDay, st, et, seatNumber, startLoc, endLoc, bookingID, journeyID
@@ -273,17 +272,14 @@ BEGIN
     JOIN Route r ON s.RouteID = r.RouteID
     WHERE t.TicketID = ticketID;
 
-    -- Check if the ticket is still valid (journey hasn't ended)
     IF depDay = CURDATE() AND et > CURTIME() THEN
         SET isValid = TRUE;
     END IF;
 
-    -- If valid, insert a new record into the Boarding table
     IF isValid THEN
         INSERT INTO Boarding (BookingID, JourneyID, JourneyDate, Boarded)
         VALUES (bookingID, journeyID, depDay, TRUE);
 
-        -- Return verification result
         SELECT 'Valid' AS Status, ticketID AS TicketIdentifier, depDay AS Date, 
                st AS Start_Time, et AS End_Time, seatNumber AS Seat_Number, 
                startLoc AS Start_Location, endLoc AS End_Location;
@@ -292,5 +288,45 @@ BEGIN
     END IF;
 END //
 
+CREATE PROCEDURE GetUserBusUsage(IN usid INT)
+BEGIN
+    SELECT 
+        B.BookingID,
+        S.DepartueDay,
+        S.StartTime,
+        S.EndTime,
+        R.StartLocation,
+        R.EndLocation,
+        Bus.BusRegistrationNumber,
+        D.DriverName,
+        B.Seat,
+        Brd.Boarded
+    FROM Bookings B
+    JOIN Schedule S ON B.JourneyID = S.JourneyID
+    JOIN Route R ON S.RouteID = R.RouteID
+    JOIN Bus ON S.BusID = Bus.BusID
+    JOIN Driver D ON S.DriverID = D.DriverID
+    LEFT JOIN Boarding Brd ON B.BookingID = Brd.BookingID
+    WHERE B.UserID = usid
+    AND S.DepartueDay >= DATE(NOW()) - INTERVAL 30 DAY;
+END //
+
+CREATE PROCEDURE GetBusUsageByBus(IN busid INT)
+BEGIN
+    SELECT 
+        S.JourneyID,
+        S.DepartueDay,
+        S.StartTime,
+        S.EndTime,
+        R.StartLocation,
+        R.EndLocation,
+        COUNT(B.BookingID) AS SeatsBooked  -- Counting booked seats per journey
+    FROM Schedule S
+    JOIN Route R ON S.RouteID = R.RouteID
+    LEFT JOIN Bookings B ON S.JourneyID = B.JourneyID
+    WHERE S.BusID = busid
+    AND S.DepartueDay >= DATE(NOW()) - INTERVAL 30 DAY
+    GROUP BY S.JourneyID, S.DepartueDay, S.StartTime, S.EndTime, R.StartLocation, R.EndLocation;
+END //
 
 delimiter ;
