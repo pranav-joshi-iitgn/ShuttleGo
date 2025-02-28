@@ -95,7 +95,7 @@ CREATE TABLE Feedback (
 CREATE TABLE Tickets (
     TicketID VARCHAR(255) PRIMARY KEY,
     BookingID INT UNIQUE,
-    DepartueDay DATE,
+    Departure_Date DATE,
     StartTime TIME,
     EndTime TIME,
     SeatNumber INT,
@@ -120,11 +120,9 @@ VALUES (1, 'XYZ', '1234567890');
 INSERT INTO Route (RouteID, StartLocation, EndLocation, IntermediateLocations)
 VALUES (1, 'IITGN', 'Kudasan', 'Dholakuva Metro Station, Rakshashakti Circle');
 INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
-VALUES (1, 1, 1, 1, '08:00:00', '08:30:00',"2025-02-28");
+VALUES (1, 1, 1, 1, '20:00:00', '20:30:00',"2025-02-28");
 INSERT INTO Bookings (BookingID, JourneyID, UserID, Seat)
 VALUES (1, 1, 1, 1);
-INSERT INTO Boarding (BookingID, JourneyID, JourneyDate, Boarded)
-VALUES (1, 1, '2025-02-26', true);
 INSERT INTO LiveLocation (LocationID, BusID, Latitude, Longitude, LastUpdatedTime)
 VALUES (1, 1, 23.123, 72.123, '08:00:00');
 INSERT INTO Penalty (PenaltyID, UserID, NumberOfMisses, PenaltyAmount, PenaltyDate)
@@ -133,11 +131,6 @@ INSERT INTO Authorities (AuthorityID, Name, Email, Password)
 VALUES (1, 'PQR', 'pqr@iitgn.ac.in', 'hashed_password');
 INSERT INTO Feedback (FeedbackID, UserID, BusID, FeedbackText, Rating, FeedbackDate)
 VALUES (1, 1, 1, 'Good Service', 4, '2025-02-26');
-
-
-INSERT INTO Schedule (JourneyID, BusID, DriverID, RouteID, StartTime, EndTime, DepartueDay)
-VALUES (1, 1, 1, 1, '03:00:00', '08:30:00',"2025-02-27");
-
 
 
 CREATE VIEW today as (SELECT DATE(NOW()));
@@ -253,8 +246,50 @@ BEGIN
     INSERT INTO Tickets (TicketID, BookingID, DepartueDay, StartTime, EndTime, SeatNumber)
     VALUES (ticketID, bid, depDay, st, et, seatNumber);
 
-    SELECT ticketID AS TicketIdentifier, depDay AS Date, st AS Start_Time, et AS End_Time, 
+    SELECT ticketID AS TicketIdentifier, depDay AS Departure_Date, st AS Start_Time, et AS End_Time, 
            seatNumber AS Seat_Number, startLoc AS Start_Location, endLoc AS End_Location;
+END //
+
+
+CREATE PROCEDURE VerifyTicket(IN ticketID VARCHAR(255))
+BEGIN
+    DECLARE depDay DATE;
+    DECLARE st TIME;
+    DECLARE et TIME;
+    DECLARE seatNumber INT;
+    DECLARE startLoc VARCHAR(255);
+    DECLARE endLoc VARCHAR(255);
+    DECLARE bookingID INT;
+    DECLARE journeyID INT;
+    DECLARE isValid BOOLEAN DEFAULT FALSE;
+
+    -- Check if the ticket exists and fetch journey details
+    SELECT t.DepartueDay, t.StartTime, t.EndTime, t.SeatNumber, 
+           r.StartLocation, r.EndLocation, t.BookingID, b.JourneyID
+    INTO depDay, st, et, seatNumber, startLoc, endLoc, bookingID, journeyID
+    FROM Tickets t
+    JOIN Bookings b ON t.BookingID = b.BookingID
+    JOIN Schedule s ON b.JourneyID = s.JourneyID
+    JOIN Route r ON s.RouteID = r.RouteID
+    WHERE t.TicketID = ticketID;
+
+    -- Check if the ticket is still valid (journey hasn't ended)
+    IF depDay = CURDATE() AND et > CURTIME() THEN
+        SET isValid = TRUE;
+    END IF;
+
+    -- If valid, insert a new record into the Boarding table
+    IF isValid THEN
+        INSERT INTO Boarding (BookingID, JourneyID, JourneyDate, Boarded)
+        VALUES (bookingID, journeyID, depDay, TRUE);
+
+        -- Return verification result
+        SELECT 'Valid' AS Status, ticketID AS TicketIdentifier, depDay AS Date, 
+               st AS Start_Time, et AS End_Time, seatNumber AS Seat_Number, 
+               startLoc AS Start_Location, endLoc AS End_Location;
+    ELSE
+        SELECT 'Invalid or Expired' AS Status;
+    END IF;
 END //
 
 
