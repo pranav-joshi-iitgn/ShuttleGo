@@ -34,7 +34,7 @@ CREATE TABLE Schedule (
     RouteID INT,
     StartTime TIME NOT NULL,
     EndTime TIME NOT NULL,
-    DepartueDay DATE NOT NULL,
+    DepartureDay DATE NOT NULL,
     FOREIGN KEY (BusID) REFERENCES Bus(BusID),
     FOREIGN KEY (DriverID) REFERENCES Driver(DriverID),
     FOREIGN KEY (RouteID) REFERENCES Route(RouteID)
@@ -234,7 +234,7 @@ BEGIN
     DECLARE startLoc VARCHAR(255);
     DECLARE endLoc VARCHAR(255);
 
-    SELECT s.DepartueDay, s.StartTime, s.EndTime, b.Seat, r.StartLocation, r.EndLocation
+    SELECT s.DepartureDay, s.StartTime, s.EndTime, b.Seat, r.StartLocation, r.EndLocation
     INTO depDay, st, et, seatNumber, startLoc, endLoc
     FROM Bookings b
     JOIN Schedule s ON b.JourneyID = s.JourneyID
@@ -243,7 +243,7 @@ BEGIN
 
     SET ticketID = CONCAT('TICKET-', bid, '-', UNIX_TIMESTAMP(NOW()));
 
-    INSERT INTO Tickets (TicketID, BookingID, DepartueDay, StartTime, EndTime, SeatNumber)
+    INSERT INTO Tickets (TicketID, BookingID, DepartureDay, StartTime, EndTime, SeatNumber)
     VALUES (ticketID, bid, depDay, st, et, seatNumber);
 
     SELECT ticketID AS TicketIdentifier, depDay AS Departure_Date, st AS Start_Time, et AS End_Time, 
@@ -263,7 +263,7 @@ BEGIN
     DECLARE journeyID INT;
     DECLARE isValid BOOLEAN DEFAULT FALSE;
 
-    SELECT t.DepartueDay, t.StartTime, t.EndTime, t.SeatNumber, 
+    SELECT t.DepartureDay, t.StartTime, t.EndTime, t.SeatNumber, 
            r.StartLocation, r.EndLocation, t.BookingID, b.JourneyID
     INTO depDay, st, et, seatNumber, startLoc, endLoc, bookingID, journeyID
     FROM Tickets t
@@ -292,7 +292,7 @@ CREATE PROCEDURE GetUserBusUsage(IN usid INT)
 BEGIN
     SELECT 
         B.BookingID,
-        S.DepartueDay,
+        S.DepartureDay,
         S.StartTime,
         S.EndTime,
         R.StartLocation,
@@ -308,14 +308,14 @@ BEGIN
     JOIN Driver D ON S.DriverID = D.DriverID
     LEFT JOIN Boarding Brd ON B.BookingID = Brd.BookingID
     WHERE B.UserID = usid
-    AND S.DepartueDay >= DATE(NOW()) - INTERVAL 30 DAY;
+    AND S.DepartureDay >= DATE(NOW()) - INTERVAL 30 DAY;
 END //
 
 CREATE PROCEDURE GetBusUsageByBus(IN busid INT)
 BEGIN
     SELECT 
         S.JourneyID,
-        S.DepartueDay,
+        S.DepartureDay,
         S.StartTime,
         S.EndTime,
         R.StartLocation,
@@ -325,8 +325,8 @@ BEGIN
     JOIN Route R ON S.RouteID = R.RouteID
     LEFT JOIN Bookings B ON S.JourneyID = B.JourneyID
     WHERE S.BusID = busid
-    AND S.DepartueDay >= DATE(NOW()) - INTERVAL 30 DAY
-    GROUP BY S.JourneyID, S.DepartueDay, S.StartTime, S.EndTime, R.StartLocation, R.EndLocation;
+    AND S.DepartureDay >= DATE(NOW()) - INTERVAL 30 DAY
+    GROUP BY S.JourneyID, S.DepartureDay, S.StartTime, S.EndTime, R.StartLocation, R.EndLocation;
 END //
 
 delimiter ;
