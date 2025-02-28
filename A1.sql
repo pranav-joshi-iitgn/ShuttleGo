@@ -1,6 +1,6 @@
+delete database ShuttleGo;
+create database ShuttleGo;
 USE ShuttleGo;
-
-START TRANSACTION;
 
 CREATE TABLE Member (
     MemberID INT PRIMARY KEY AUTO_INCREMENT,
