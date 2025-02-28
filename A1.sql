@@ -166,8 +166,8 @@ CREATE TEMPORARY TABLE a as (SELECT (DepartureDay > DATE(NOW()) or StartTime > (
 CREATE TEMPORARY TABLE b as (SELECT (count(*) > 0) as val from Bookings where BookingID = bid);
 DELETE FROM Bookings WHERE BookingID = bid and (select * from a);
 UPDATE ReturnCode SET val = (true in (select a.val and b.val from a,b));
-DROP TABLE a;
-DROP TABLE b;
+DROP TEMPORARY TABLE a;
+DROP TEMPORARY TABLE b;
 SELECT * FROM ReturnCode;
 END//
 
