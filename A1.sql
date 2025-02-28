@@ -162,15 +162,13 @@ END//
 
 CREATE PROCEDURE cancel_booking(IN bid INT)
 BEGIN
-START TRANSACTION;
+DROP TEMPORARY TABLE a;
+DROP TEMPORARY TABLE b;
 CREATE TEMPORARY TABLE a as (SELECT (DepartureDay > DATE(NOW()) or StartTime > (TIME(NOW()) + INTERVAL 3 HOUR)) as val from Schedule where JourneyID in (SELECT JourneyID FROM Bookings where BookingID = bid));
 CREATE TEMPORARY TABLE b as (SELECT (count(*) > 0) as val from Bookings where BookingID = bid);
 DELETE FROM Bookings WHERE BookingID = bid and (select * from a);
 UPDATE ReturnCode SET val = (true in (select a.val and b.val from a,b));
-DROP TEMPORARY TABLE a;
-DROP TEMPORARY TABLE b;
 SELECT * FROM ReturnCode;
-COMMIT;
 END//
 
 CREATE PROCEDURE verify_new_booking(IN jid INT, IN usid INT, IN st INT)
