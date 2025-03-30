@@ -26,9 +26,9 @@ digraph ShuttleGo_StateChart {
     SeatBooked -> SeatBooked [label="Generate\nTicket"];
     SeatBooked -> ViewSchedule [label="Cancel\nBooking"];
     TicketVerification -> Traveling [label="Success"];
-    TicketVerification -> ViewSchedule [label="Passender Present\nbut Failure\n(no penalty)"];
-    TicketVerification -> ViewSchedule [label="Missed Journey\n(penalty)"];
-    Traveling -> Arrival [label="Arrive"];
+    TicketVerification -> ViewSchedule [label="Missed Journey (penalty)"];
+    TicketVerification -> ViewSchedule [label="Passenger Present \n but Verification Failure\n(no penalty)"];
+    Traveling -> Arrival;
     Arrival -> ViewSchedule [label="Provide Feedback"];
     Arrival -> ViewSchedule [label="No feedback"];
     Traveling -> LiveLocationUpdate [label="Update Location"];

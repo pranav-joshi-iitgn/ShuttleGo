@@ -1,0 +1,46 @@
+digraph ShuttleGo_ActivityDiagram {
+    //graph [nodesep=1];
+    node [shape=rectangle, color=black, fillcolor="#d9f3e7", style=filled];
+    edge [fontname="Arial",color=black];
+    //splines=false;
+
+    // Activities
+    Start [label="Start", shape=circle];
+    Registration [label="Registration or Login"];
+    ViewSchedule [label="View Schedule"];
+    BookSeat [label="Book Seat"];
+    GenerateTicket [label="Generate Ticket"];
+    VerifyTicket [label="Verify Ticket"];
+    Travel [label="Travel"];
+    UpdateLocation [label="Update Live Location"];
+    Arrive [label="Arrive"];
+    ProvideFeedback [label="Provide Feedback"];
+    End [label="End", shape=circle];
+
+    // Decision Nodes
+    Decision1 [shape=diamond, label="Success?"];
+    Decision2 [shape=diamond, label="Success?"];
+    Decision3 [shape=diamond, label="Success?"];
+    Decision4 [shape=diamond, label="Provide Feedback?"];
+
+    // Flow
+    Start -> Registration:n;
+    Registration -> Decision1;
+    Decision1:s -> ViewSchedule [label="Yes"];
+    Decision1:e -> Registration [label="No"];
+    ViewSchedule -> BookSeat;
+    BookSeat -> Decision2;
+    Decision2:s -> GenerateTicket [label="Yes"];
+    Decision2:e -> ViewSchedule [label="No"];
+    GenerateTicket -> VerifyTicket;
+    VerifyTicket -> Decision3;
+    Decision3:s -> Travel [label="Yes"];
+    Decision3:e -> ViewSchedule [label="No"];
+    Travel -> UpdateLocation;
+    UpdateLocation -> Travel;
+    Travel -> Arrive;
+    Arrive -> Decision4;
+    Decision4:s -> ProvideFeedback [label="Yes"];
+    Decision4:e -> End [label="No"];
+    ProvideFeedback -> End;
+}
