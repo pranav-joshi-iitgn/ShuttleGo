@@ -1,0 +1,36 @@
+digraph ShuttleGo_StateChart {
+    rankdir=LR;
+    node [shape=ellipse, color=green, fillcolor="#d9f3e7", style=filled, penwidth=5];
+    edge [fontname="Arial",color=darkgreen];
+
+    // States
+    Initial [label="", shape=point];
+    PassengerRegistration [label="Registration\nor Login"];
+    ViewSchedule [label="View\nSchedule"];
+    BookingSeat [label="Booking\nRequest"];
+    SeatBooked [label="Seat\nBooked"];
+    TicketVerification [label="Ticket\nVerification"];
+    Traveling [label="Traveling"];
+    Arrival [label="Arrival"];
+    LiveLocationUpdate [label="Live\nLocation\nUpdate"];
+
+    // Edges
+    Initial -> PassengerRegistration;
+    PassengerRegistration -> ViewSchedule [label="Log-Out or\n De-Register",dir=back];
+    PassengerRegistration -> ViewSchedule [label="Success"];
+    PassengerRegistration -> PassengerRegistration [label="Failure"]
+    ViewSchedule -> BookingSeat [label="Book Seat"];
+    BookingSeat -> ViewSchedule [label="Failure"];
+    BookingSeat -> SeatBooked [label="Success"];
+    SeatBooked -> TicketVerification [label="Bus on-boarding"];
+    SeatBooked -> SeatBooked [label="Generate\nTicket"];
+    SeatBooked -> ViewSchedule [label="Cancel\nBooking"];
+    TicketVerification -> Traveling [label="Success"];
+    TicketVerification -> ViewSchedule [label="Passender Present\nbut Failure\n(no penalty)"];
+    TicketVerification -> ViewSchedule [label="Missed Journey\n(penalty)"];
+    Traveling -> Arrival [label="Arrive"];
+    Arrival -> ViewSchedule [label="Provide Feedback"];
+    Arrival -> ViewSchedule [label="No feedback"];
+    Traveling -> LiveLocationUpdate [label="Update Location"];
+    LiveLocationUpdate -> Traveling [label="Continue Journey"];
+}
