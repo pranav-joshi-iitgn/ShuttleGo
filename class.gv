@@ -1,0 +1,104 @@
+digraph ShuttleGo {
+    rankdir=LR;
+    node [shape=plaintext, fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=8];
+    
+    Passenger [label=<
+    <table border="1" cellborder="1" cellspacing="0" cellpadding="4">
+    <tr>
+    <td bgcolor="orange" align="center">
+    <font point-size="11"><b>Passenger</b></font>
+    </td></tr>
+    <tr><td align="center"><u>PassengerID (PK)</u><br/>Name<br/>Image<br/>DateOfBirth<br/>IITGNEmail (UNIQUE)<br/>MobileNumber</td></tr>
+    <tr><td>
+    + last_30_days() <br/>
+    + create_new_booking(JourneyID,Seat) <br/>
+    + GetUserBusUsage <br/>
+    </td></tr>
+    </table>>];
+    
+    Bus [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Bus</b></font></td></tr><tr><td align="center"><u>BusID (PK)</u><br/>BusRegistrationNumber (UNIQUE)<br/>Capacity</td></tr>
+    <tr><td>
+    + GetLiveLocation() <br/>
+    + UpdateLiveLocation(lat:float,lon:float) <br/>
+    + GetBusUsageByBus
+    </td></tr>
+    </table>>];
+    
+    Driver [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Driver</b></font></td></tr><tr><td align="center"><u>DriverID (PK)</u><br/>DriverName<br/>DriverMobileNumber</td></tr>
+    <tr><td>
+    VerifyTicket(TicketID)
+    </td></tr>
+    </table>>];
+    
+    Route [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Route</b></font></td></tr><tr><td align="center"><u>RouteID (PK)</u><br/>StartLocation<br/>EndLocation<br/>IntermediateLocations</td></tr>
+    <tr><td>
+    </td></tr>
+    </table>>];
+    
+    Schedule [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Schedule</b></font></td></tr><tr><td align="center"><u>JourneyID (PK)</u><br/>BusID (FK)<br/>DriverID (FK)<br/>RouteID (FK)<br/>StartTime<br/>EndTime<br/>DepartureDay</td></tr>
+    <tr><td>
+    + view_schedule()
+    </td></tr>
+    </table>>];
+    
+    Bookings [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Bookings</b></font></td></tr><tr><td align="center"><u>BookingID (PK)</u><br/>JourneyID (FK)<br/>UserID (FK)<br/>Seat</td></tr>
+    <tr><td>
+    + GenerateTicket() <br/>
+    - verify_new_booking(JourneyID,UserID,Seat) <br/>
+    + cancel_booking() <br/>
+    </td></tr>
+    </table>>];
+
+    Boarding [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Boarding</b></font></td></tr><tr><td align="center"><u>BookingID (PK, FK)</u><br/>JourneyID (FK)<br/>JourneyDate<br/>Boarded</td></tr>
+    <tr><td>
+
+    </td></tr>
+    </table>>];
+
+    LiveLocation [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>LiveLocation</b></font></td></tr><tr><td align="center"><u>LocationID (PK)</u><br/>BusID (FK)<br/>Latitude<br/>Longitude<br/>LastUpdatedTime</td></tr>
+    <tr><td>
+    </td></tr>
+    </table>>];
+
+    Penalty [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Penalty</b></font></td></tr><tr><td align="center"><u>PenaltyID (PK)</u><br/>UserID (FK)<br/>NumberOfMisses<br/>PenaltyAmount<br/>PenaltyDate</td></tr>
+    <tr><td>
+    </td></tr>
+    </table>>];
+
+    Authorities [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Authorities</b></font></td></tr><tr><td align="center"><u>AuthorityID (PK)</u><br/>Name<br/>Email (UNIQUE)<br/>Password</td></tr>
+    <tr><td>
+    </td></tr>
+    </table>>];
+
+    Feedback [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Feedback</b></font></td></tr><tr><td align="center"><u>FeedbackID (PK)</u><br/>UserID (FK)<br/>BusID (FK)<br/>FeedbackText<br/>Rating<br/>FeedbackDate</td></tr>
+    <tr><td>
+    </td></tr>
+    </table>>];
+
+    Tickets [label=<<table border="1" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="orange" align="center"><font point-size="11"><b>Tickets</b></font></td></tr><tr><td align="center"><u>TicketID (PK)</u><br/>BookingID (FK, UNIQUE)<br/>Departure_Date<br/>StartTime<br/>EndTime<br/>SeatNumber<br/>CreatedAt</td></tr>
+    <tr><td>
+    </td></tr>
+    </table>>];
+
+    
+    // Relationships
+    Schedule -> Bus [label="BusID"];
+    Schedule -> Driver [label="DriverID"];
+    Schedule -> Route [label="RouteID"];
+    
+    Bookings -> Schedule [label="JourneyID"];
+    Bookings -> Passenger [label="UserID"];
+    
+    Boarding -> Bookings [label="BookingID"];
+    Boarding -> Schedule [label="JourneyID"];
+    
+    LiveLocation -> Bus [label="BusID"];
+    
+    Penalty -> Passenger [label="UserID"];
+    
+    Feedback -> Passenger [label="UserID"];
+    Feedback -> Bus [label="BusID"];
+    
+    Tickets -> Bookings [label="BookingID"];
+}
