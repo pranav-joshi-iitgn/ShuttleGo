@@ -1,0 +1,77 @@
+@startuml
+node "Server (IIT Gandhinagar)" {
+    component "Application Server (Django)" as AppServer
+    component "Database Server (MySQL)" as DatabaseServer
+    database "Main Database" as Database
+    process "Data Stream API" as DataStreamAPI
+
+}
+
+node "Bus Fleet (Various Locations)" {
+  package "Bus 1 (GJ-18-AB-0001)" {
+    component "GPS Sensor" as GPSSensor1
+  }
+  package "Bus 2 (GJ-18-AB-0002)" {
+    component "GPS Sensor" as GPSSensor2
+  }
+  collections "Multiple Buses" as Buses
+  GPSSensor1 -- Buses
+  GPSSensor2 -- Buses
+}
+
+node "User Devices (Various Locations)" {
+  component "Web Browser (Chrome, Firefox, etc.)" as WebBrowser
+  collections "Multiple Users" as Users
+  WebBrowser -- Users : Interact with
+}
+
+' Specify artifacts (software elements)
+artifact "ShuttleGo Web Application" as WebApp
+
+
+' Specify connections and dependencies
+WebBrowser --> WebServer : HTTP/HTTPS requests
+
+
+Buses --> DataStreamAPI : Streams Location Data
+DataStreamAPI --> DatabaseServer : Location Data to Database
+DatabaseServer --> Database : Requests / Updates the Data
+Database --> DatabaseServer : Sends the Data
+DatabaseServer --> AppServer : Sends the Data
+AppServer --> DatabaseServer : Requests / Updates the Data
+
+AppServer -- WebServer : Provides Dynamic Content / Accepts and Processes Requests
+WebServer --> WebBrowser : Sends HTML, CSS, JavaScript
+
+WebApp -- WebServer : Served on
+
+
+' Additional notes or considerations
+note right of Users
+  Passengers and Authorities
+  access the web application.
+end note
+
+note left of AppServer
+  - Handles user authentication and authorization.
+  - Implements business logic for bookings, schedules, etc.
+  - Processes live GPS data.
+  - Provides API endpoints for the web application.
+end note
+
+note bottom of Database
+  - Located on the server in IIT Gandhinagar.
+  - Stores all required data for the application.
+end note
+
+note right of WebServer
+  - Serves static web content (HTML, CSS, JS).
+  - Forwards API requests     to the Application Server.
+end note
+
+note left of Buses
+  - Each bus has a GPS sensor.
+  - Sends live location data to the server.
+end note
+
+@enduml

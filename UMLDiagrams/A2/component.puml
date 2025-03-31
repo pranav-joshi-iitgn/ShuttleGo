@@ -1,0 +1,134 @@
+@startuml
+
+skinparam component {
+  FontSize 14
+}
+
+skinparam interface {
+  FontSize 11
+}
+
+' The first component we have is the frontend
+component "Frontend" as frontend {
+  ' The frontend has a responsibilty to show the User Interface as well as to handle the user input
+  interface "User Interface" as ui
+  interface "User Input Manager" as input
+}
+
+' The second component we have is the backend
+component "Backend" as backend {
+  ' The backend has the responsibility of authentication, database management, location management
+    component "Logic Management" as logic{
+        interface create_new_user as create_new_user
+        interface create_new_bus as create_new_bus
+        interface GetBusUsageByBus as GetBusUsageByBus
+        interface create_new_driver as create_new_driver
+        interface create_new_route as create_new_route
+        interface create_new_schedule as create_new_schedule
+        interface create_new_booking as create_new_booking
+        interface cancel_booking as cancel_booking
+        interface verify_new_booking as verify_new_booking
+        interface create_new_boarding as create_new_boarding
+        interface GetLiveLocation as GetLiveLocation
+        interface GenerateTicket as GenerateTicket
+        interface VerifyTicket as VerifyTicket
+        interface GetUserBusUsage as GetUserBusUsage
+        interface UpdateLiveLocation as UpdateLiveLocation
+    }
+    component "Authentication Manager" as auth {
+        interface "Authenticate User" as authUser
+    }
+    component "Database Manager" as db {
+        component "Passenger Table" as passenger
+        component "Authorities Table" as authorities
+        component "Driver Table" as driver
+        component "Bookings Table" as bookings
+        component "Boarding Table" as boarding
+        component "Tickets Table" as tickets
+        component "Penalty Table" as penalty
+        component "Feedback Table" as feedback
+        component "Bus Table" as bus
+        component "Route Table" as route
+        component "Schedule Table" as schedule
+        component "LiveLocation Table" as liveLocation
+    }
+    component "Location Manager" as loc {
+    }
+}
+
+' The third component we have is the database
+component "Database" as database {
+  ' The database has the responsibility of storing the data
+    interface "Data Storage" as storage
+}
+
+' The fourth component we have is the external services
+component "External Services" as external {
+  ' The external services have the responsibility of handling the external services, namely the LocationAPI
+    interface "Location API" as locationAPI
+}
+
+' Now we will connect the components
+' Adding the tables
+
+
+
+
+
+' Now we will connect the components
+frontend --> ui : "User Input"
+ui --> input : "User Input"
+input --> auth : "User Input"
+auth --> authUser : "Authentication"
+authUser --> logic : "After User Authentication"
+db --> storage : "Data Storage"
+locationAPI --> loc : "Location API"
+
+
+' LOGIC MANAGEMENT
+
+
+' Connecting the interfaces to the logic manager
+logic --> create_new_user : "Create New User"
+logic --> create_new_bus : "Create New Bus"
+GetUserBusUsage --> logic : "Get User Bus Usage"
+logic --> create_new_driver : "Create New Driver"
+logic --> create_new_route : "Create New Route"
+logic --> create_new_schedule : "Create New Schedule"
+logic --> create_new_booking : "Create New Booking"
+logic --> cancel_booking : "Cancel Booking"     
+logic --> verify_new_booking : "Verify New Booking"
+logic --> create_new_boarding : "Create New Boarding"
+GetLiveLocation --> logic : "Get Live Location"
+logic --> GenerateTicket : "Generate Ticket"
+logic --> VerifyTicket : "Verify Ticket"
+loc --> UpdateLiveLocation : "Update Live Location"
+GetBusUsageByBus --> logic : "Get Bus Usage By Bus"
+
+' Now we will connect the interfaces to the other end
+create_new_user --> db 
+create_new_bus --> db    
+create_new_driver --> db 
+create_new_route --> db 
+create_new_schedule --> db 
+create_new_booking --> db 
+cancel_booking --> db 
+verify_new_booking --> db 
+create_new_boarding --> db 
+liveLocation --> GetLiveLocation 
+UpdateLiveLocation --> liveLocation 
+db --> GenerateTicket 
+VerifyTicket --> db 
+db --> GetUserBusUsage 
+db --> GetBusUsageByBus 
+
+' Now we will connect the components to the database
+db -down-> storage : "Data Storage"
+
+
+
+
+
+
+
+@enduml
