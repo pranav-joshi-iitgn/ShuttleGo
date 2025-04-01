@@ -1,0 +1,63 @@
+@startuml
+left to right direction
+
+skinparam package {
+  BackgroundColor LightBlue
+  BorderColor Blue
+  FontColor Black
+}
+
+skinparam class {
+  BackgroundColor LightGray
+  BorderColor Black
+  FontColor Black
+}
+
+package "User Management" {
+  class Passenger
+  class Authorities
+  class Penalty
+}
+
+package "Vehicle Management" {
+  class Bus
+  class Driver
+}
+
+package "Route & Schedule Management" {
+  class Route
+  class Schedule
+}
+
+package "Booking & Ticketing" {
+  class Bookings
+  class Tickets
+  class Boarding
+}
+
+package "Location & Feedback" {
+  class LiveLocation
+  class Feedback
+}
+
+Passenger --|> Bookings : UserID
+Authorities --|> Schedule : (Manages)
+Penalty --|> Passenger : UserID
+
+Bus --|> Schedule : BusID
+Driver --|> Schedule : DriverID
+
+Route --|> Schedule : RouteID
+
+Bookings --|> Passenger : UserID
+Bookings --|> Schedule : JourneyID
+Tickets --|> Bookings : BookingID
+Boarding --|> Bookings : BookingID
+Boarding --|> Schedule : JourneyID
+
+LiveLocation --|> Bus : BusID
+
+Feedback --|> Passenger : UserID
+Feedback --|> Bus : BusID
+
+@enduml
