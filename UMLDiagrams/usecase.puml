@@ -35,7 +35,7 @@ actor Passenger <<Passenger>>
 actor Sensor <<Sensor>>
 actor Authority <<Authority>>
 
-rectangle "Bus Ticketing System" {
+rectangle "Shuttle Go" {
   (Register Passenger) as register
   (View Schedule) as view_schedule
   (Book a Seat) as book
