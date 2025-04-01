@@ -80,9 +80,9 @@ Authority --|> addroute
 Authority <|-- feedback
 
 book ..> verify_booking : includes
-book ..> generate_ticket : extends
+book <.. generate_ticket : extends
 verify_booking ..> user_penalties : includes
-book ..> cancel_booking : extends
+book <.. cancel_booking : extends
 verify_ticket ..> mark_board : includes
 
 @enduml
