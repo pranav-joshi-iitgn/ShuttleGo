@@ -1,0 +1,88 @@
+@startuml
+left to right direction
+
+skinparam actor {
+  BackgroundColor<<Passenger>> LightBlue
+  BorderColor<<Passenger>> Blue
+  BackgroundColor<<Sensor>> LightGreen
+  BorderColor<<Sensor>> Green
+  BackgroundColor<<Authority>> LightCoral
+  BorderColor<<Authority>> Red
+}
+
+skinparam usecase {
+  BackgroundColor LightYellow
+  BorderColor Orange
+}
+
+skinparam rectangle {
+  BackgroundColor LightGray
+  BorderColor Black
+}
+
+skinparam association {
+  LineColor DarkBlue
+  ArrowColor DarkBlue
+}
+
+skinparam dependency {
+  LineColor DarkGreen
+  LineStyle dotted
+  ArrowColor DarkGreen
+}
+
+actor Passenger <<Passenger>>
+actor Sensor <<Sensor>>
+actor Authority <<Authority>>
+
+rectangle "Bus Ticketing System" {
+  (Register Passenger) as register
+  (View Schedule) as view_schedule
+  (Book a Seat) as book
+  (Cancel Booking) as cancel_booking
+  (Verify New Booking) as verify_booking
+  (Provide Feedback) as feedback
+  (Generate Ticket) as generate_ticket
+  (View Booking History) as Passenger_History
+  (View Passenger Penalty Details) as user_penalties
+  (Travel History) as last30days
+  (View Live Location) as get_live_location
+  (Update Live Location) as Update_live_location
+  (Mark Boarding Status) as mark_board
+  (Verify Ticket) as verify_ticket
+  (View Bus History) as Bus_History
+  (Add to schedule) as addtoschedule
+  (Add bus) as addbus
+  (Add driver) as adddriver
+  (Add Route) as addroute
+}
+
+Passenger --|> register
+Passenger --|> view_schedule
+Passenger --|> book
+Passenger --|> feedback
+Passenger --|> Passenger_History
+Passenger --|> user_penalties
+Passenger --|> last30days
+Passenger --|> verify_ticket
+Passenger --|> get_live_location
+
+Sensor --|> verify_ticket
+Sensor --|> Update_live_location
+Sensor --|> mark_board
+
+Authority --|> get_live_location
+Authority --|> Bus_History
+Authority --|> addtoschedule
+Authority --|> addbus
+Authority --|> adddriver
+Authority --|> addroute
+Authority <|-- feedback
+
+book ..> verify_booking : includes
+book ..> generate_ticket : extends
+verify_booking ..> user_penalties : includes
+book ..> cancel_booking : extends
+verify_ticket ..> mark_board : includes
+
+@enduml
