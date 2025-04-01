@@ -1,13 +1,13 @@
 @startuml
-' skinparam object {
-'   BackgroundColor LightYellow
-'   BorderColor DarkGreen
-' }
+ skinparam object {
+   BackgroundColor LightYellow
+   BorderColor DarkGreen
+ }
 
 object "p1: Passenger" as p1  {
   PassengerID = 1000
-  Name = "Jethalal Gada"
-  IITGNEmail = "jethalal.gada@iitgn.ac.in"
+  Name = "First User"
+  IITGNEmail = "first.user@iitgn.ac.in"
   MobileNumber = "9988776655"
   DateOfBirth = 1999-12-31
 }
@@ -20,7 +20,7 @@ object "b1: Bus" as b1  {
 
 object "d1: Driver" as d1  {
   DriverID = 10
-  DriverName = "Hathi Bhai"
+  DriverName = "First Driver"
   DriverMobileNumber = "9876543210"
 }
 
@@ -97,17 +97,12 @@ object "t1: Tickets" as t1 {
   CreatedAt = 2025-03-31 10:00:00
 }
 
-object "rc1: ReturnCode" as rc1 {
-  val = true
-}
 
 ' --- Links between Objects ---
 
 p1 -- bk1 : Books Ticket
-p1 -- s1 : Looks for Schedule
-p1 -- ll1 : Tracks Bus
-b1 -- d1 : Driven by Driver
 b1 -- s1 : Serves for Schedule
+f1 -- b1 : Feedback for Bus
 d1 -- s1 : Drives for Schedule
 r1 -- s1 : Follows Route
 s1 -- bk1 : Books for Journey
@@ -116,6 +111,7 @@ b1 -- ll1 : Shares Live Location
 p1 -- pen1 : Penalizes User
 p1 -- f1 : Provides Feedback
 bk1 -- t1 : Generates Ticket
+bd1 -- s1 : Verification against a Schedul
 a1 -- f1 : Manages Feedback
 a1 -- s1 : Manages Schedule
 a1 -- b1 : Manages Bus
