@@ -19,6 +19,7 @@ component "Frontend" as frontend {
 component "Backend" as backend {
   ' The backend has the responsibility of authentication, database management, location management
     component "Logic Management" as logic{
+        interface Main as main
         interface create_new_user as create_new_user
         interface create_new_bus as create_new_bus
         interface GetBusUsageByBus as GetBusUsageByBus
@@ -39,6 +40,7 @@ component "Backend" as backend {
         interface "Authenticate User" as authUser
     }
     component "Database Manager" as db {
+        interface "Database Engine" as dbengine
         component "Passenger Table" as passenger
         component "Authorities Table" as authorities
         component "Driver Table" as driver
@@ -78,10 +80,8 @@ component "External Services" as external {
 ' Now we will connect the components
 frontend --> ui : "User Input"
 ui --> input : "User Input"
-input --> auth : "User Input"
-auth --> authUser : "Authentication"
-authUser --> logic : "After User Authentication"
-db --> storage : "Data Storage"
+input --> authUser : "Authentication"
+authUser --> main : "After User Authentication"
 locationAPI --> loc : "Location API"
 
 
@@ -89,41 +89,58 @@ locationAPI --> loc : "Location API"
 
 
 ' Connecting the interfaces to the logic manager
-logic --> create_new_user : "Create New User"
-logic --> create_new_bus : "Create New Bus"
-GetUserBusUsage --> logic : "Get User Bus Usage"
-logic --> create_new_driver : "Create New Driver"
-logic --> create_new_route : "Create New Route"
-logic --> create_new_schedule : "Create New Schedule"
-logic --> create_new_booking : "Create New Booking"
-logic --> cancel_booking : "Cancel Booking"     
-logic --> verify_new_booking : "Verify New Booking"
-logic --> create_new_boarding : "Create New Boarding"
-GetLiveLocation --> logic : "Get Live Location"
-logic --> GenerateTicket : "Generate Ticket"
-logic --> VerifyTicket : "Verify Ticket"
-loc --> UpdateLiveLocation : "Update Live Location"
-GetBusUsageByBus --> logic : "Get Bus Usage By Bus"
+main --> create_new_user : "Create New User"
+main --> create_new_bus : "Create New Bus"
+GetUserBusUsage --> main : "Get User Bus Usage"
+main --> create_new_driver : "Create New Driver"
+main --> create_new_route : "Create New Route"
+main --> create_new_schedule : "Create New Schedule"
+main --> create_new_booking : "Create New Booking"
+main --> cancel_booking : "Cancel Booking"     
+main --> verify_new_booking : "Verify New Booking"
+main --> create_new_boarding : "Create New Boarding"
+GetLiveLocation --> main : "Get Live Location"
+main --> GenerateTicket : "Generate Ticket"
+main --> VerifyTicket : "Verify Ticket"
+main --> UpdateLiveLocation : "Update Live Location"
+GetBusUsageByBus --> main : "Get Bus Usage By Bus"
 
 ' Now we will connect the interfaces to the other end
-create_new_user --> db 
-create_new_bus --> db    
-create_new_driver --> db 
-create_new_route --> db 
-create_new_schedule --> db 
-create_new_booking --> db 
-cancel_booking --> db 
-verify_new_booking --> db 
-create_new_boarding --> db 
-liveLocation --> GetLiveLocation 
-UpdateLiveLocation --> liveLocation 
-db --> GenerateTicket 
-VerifyTicket --> db 
-db --> GetUserBusUsage 
-db --> GetBusUsageByBus 
+create_new_user --> dbengine 
+create_new_bus --> dbengine    
+create_new_driver --> dbengine
+create_new_route --> dbengine 
+create_new_schedule --> dbengine
+create_new_booking --> dbengine 
+cancel_booking --> dbengine 
+verify_new_booking --> dbengine
+create_new_boarding --> dbengine 
+dbengine --> GetLiveLocation 
+UpdateLiveLocation --> dbengine 
+dbengine --> GenerateTicket 
+VerifyTicket --> dbengine 
+dbengine --> GetUserBusUsage 
+dbengine --> GetBusUsageByBus 
+loc --> main
+
+' Connecting the interfaces to the database manager
+dbengine -- passenger : "Passenger Table"
+dbengine -- authorities : "Authorities Table"
+dbengine -- driver : "Driver Table"
+dbengine -- bookings : "Bookings Table"
+dbengine -- boarding : "Boarding Table"
+dbengine -- tickets : "Tickets Table"
+dbengine -- penalty : "Penalty Table"
+dbengine -- feedback : "Feedback Table"
+dbengine -- bus : "Bus Table"
+dbengine -- route : "Route Table"
+dbengine -- schedule : "Schedule Table"
+dbengine -- liveLocation : "LiveLocation Table"
+
+
 
 ' Now we will connect the components to the database
-db -down-> storage : "Data Storage"
+db -down- storage : "Data Storage"
 
 
 
