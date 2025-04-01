@@ -13,9 +13,13 @@ skinparam class {
   FontColor Black
 }
 
+package "Authority Managaement" {
+  class Authorities
+}
+
+
 package "User Management" {
   class Passenger
-  class Authorities
   class Penalty
 }
 
@@ -40,24 +44,23 @@ package "Location & Feedback" {
   class Feedback
 }
 
-Passenger --|> Bookings : UserID
-Authorities --|> Schedule : (Manages)
-Penalty --|> Passenger : UserID
+Schedule -- Bus : BusID
+Schedule -- Driver : DriverID
+Schedule -- Route : RouteID
 
-Bus --|> Schedule : BusID
-Driver --|> Schedule : DriverID
+Bookings -- Schedule : JourneyID
+Bookings -- Passenger : UserID
 
-Route --|> Schedule : RouteID
+Boarding -- Bookings : BookingID
+Boarding -- Schedule : JourneyID
 
-Bookings --|> Passenger : UserID
-Bookings --|> Schedule : JourneyID
-Tickets --|> Bookings : BookingID
-Boarding --|> Bookings : BookingID
-Boarding --|> Schedule : JourneyID
+LiveLocation -- Bus : BusID
 
-LiveLocation --|> Bus : BusID
+Penalty -- Passenger : UserID
 
-Feedback --|> Passenger : UserID
-Feedback --|> Bus : BusID
+Feedback -- Passenger : UserID
+Feedback -- Bus : BusID
+
+Tickets -- Bookings : BookingID
 
 @enduml
