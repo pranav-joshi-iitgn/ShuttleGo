@@ -16,6 +16,8 @@ CREATE TABLE Bus (
     BusRegistrationNumber VARCHAR(11) NOT NULL UNIQUE,
     Capacity INT NOT NULL
 );
+
+-- add an attribute for image and one for password
 CREATE TABLE Driver (
     DriverID INT PRIMARY KEY AUTO_INCREMENT,
     DriverName VARCHAR(255) NOT NULL,
@@ -154,7 +156,13 @@ INSERT INTO Schedule (BusID, DriverID, RouteID, StartTime, EndTime, DepartureDay
 VALUES (bid, did, rid, st, et, dd);
 END//
 
+
+-- add a procedure to view schedule
+-- add a precedure to view the seat matrix for a particular journey
+-- journey id.
+
 CREATE PROCEDURE create_new_booking(IN jid INT, IN usid INT, IN st INT)
+-- create a new boarding item as well
 BEGIN
 INSERT INTO Bookings (JourneyID, UserID, Seat)
 VALUES (jid, usid, st);
@@ -178,6 +186,7 @@ seated as (SELECT count(*) as val from Bookings where JourneyID = jid and (Seat 
 SELECT 1-count(*) from journ,seated where val > 0 or not (DepartureDay > DATE(NOW()) or StartTime > TIME(NOW()) + INTERVAL 3 HOUR);
 END //
 
+-- delete this in future
 CREATE PROCEDURE create_new_boarding(IN bid INT, IN seated BOOLEAN)
 BEGIN
 INSERT INTO Boarding (BookingID,JourneyID,JourneyDate,Boarded)
@@ -254,6 +263,7 @@ BEGIN
     END IF;
 
     IF isValid THEN
+        -- change insert to update
         INSERT INTO Boarding (BookingID, JourneyID, JourneyDate, Boarded)
         VALUES (bookingID, journeyID, depDay, TRUE);
 
