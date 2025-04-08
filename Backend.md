@@ -1,57 +1,6 @@
-### Pages
-
-```dot
-digraph{
-HomeD[label="Home\n(Driver)"];
-HomeP[label="Home\n(Passenger)"];
-SchD[label="Schedule\n(Driver)"];
-SchP[label="Schedule\n(Passenger)"];
-Man[label="Manual\nVerification"];
-Scan[label="Scan\nQR code"];
-JourneyD[label="View\nJourney\n(Driver)"];
-JourneyP[label="View\nJourney\n(Passenger)"];
-LocationP[label="Map\n(Passenger)"];
-LocationD[label="Map\n(Driver)"];
-THist[label="Travel\nHistory"];
-BHist[label="Booking\History"];
-
-Login -> HomeD:n [label="LoginDriver"];
-Login -> HomeP:n [label="LoginPassenger\nRegisterPassenger"];
-
-HomeD -> SchD:n [label="ViewSchedule"];
-HomeD -> Scan;
-HomeD -> Man;
-HomeD -> HomeD[label="FeedBack"];
-
-SchD -> JourneyD [label="Journey"];
-
-JourneyD -> LocationD [label="UpdateLiveLocation"];
-JourneyP -> LocationP [label="GetLiveLocation"];
-
-LocationD -> LocationD [label="UpdateLiveLocation"];
-LocationP -> LocationP [label="GetLiveLocation"];
-
-Scan -> Scan [label="VerifyTicket"];
-Man -> Man [label="MarkBoarding"];
-
-HomeP -> SchP:nw [label="ViewSchedule"];
-HomeP -> THist [label="TravelHistory"];
-HomeP -> BHist [label="BookingHistory"];
-HomeP -> HomeP [label="FeedBack"];
-HomeP -> Penalties [label="Penalties"];
-
-SchP -> JourneyP [label="Journey"];
-SchP -> SchP [label="CancelBooking\nGenerateTicket"];
-
-JourneyP -> SchP [label="Book"];
-
-
-}
-```
-
 ### Base Functions
 
-##### *Register Passsenger (authority)
+##### Register Passsenger (authority)
 ```python
 RegisterPassenger(email,password) -> {uid:int}
 ```
@@ -63,7 +12,7 @@ RegisterPassenger(email,password) -> {uid:int}
 - adds entry to user table
 - returns UID
 
-##### *Login Passenger (authority passenger)
+##### Login Passenger (authority passenger)
 ```python
 LoginPassenger(email,password) -> renders
 ```
@@ -77,7 +26,7 @@ LoginPassenger(email,password) -> renders
   - links for passenger functionalities, except registering and booking (which will be done via the schedule page).
   - Personal details of the passenger, including user id, email id, image. (Refer members table).
 
-##### *Login Driver (authority driver)
+##### Login Driver (authority driver)
 ```python
 LoginDriver(uid,password) -> render
 ```
@@ -87,7 +36,7 @@ LoginDriver(uid,password) -> render
   - links for driver functionalities, except updating live location, which will be done itself.
   - Personal details of the passenger, including driver id, mobile number, image. (Refer members table).
 
-##### *View Journey (passenger driver authority)
+##### View Journey (passenger driver authority)
 ```python
 Journey(jid:int) -> render
 ```
@@ -96,7 +45,7 @@ Journey(jid:int) -> render
 - details of journey (same as in the schedule table)
 - Have a form for booking a seat
 
-##### *Create Booking (passenger)
+##### Create Booking (passenger)
 ```python
 Book(uid:int,jid:int,seat:int) -> render
 ```
@@ -104,7 +53,7 @@ Book(uid:int,jid:int,seat:int) -> render
 - adds a booking
 - renders the view schedule page
 
-##### *Cancel booking
+##### Cancel booking
 ```python
 CancelBooking(BookingID) -> render
 ```
@@ -117,7 +66,7 @@ CancelBooking(BookingID) -> render
 - else, redirect to same page.
 
 
-##### *View Schedule (authority passenger driver)
+##### View Schedule (authority passenger driver)
 ```python
 ViewSchedule(uid:int) -> renders
 ```
@@ -139,35 +88,35 @@ Frontend task : Have bunch of filters
   - dates related to a location
   - etc.
 
-##### *View Booking History (optional) (authority passenger)
+##### View Booking History (optional) (authority passenger)
 ```python
 BookingHistory(uid:int) -> renders
 ```
 
 - Envoke SQL procedure `GetUserBusUsage` and send table and uid as context
 
-##### *Travel History (authority passenger)
+##### Travel History (authority passenger)
 ```python
 TravelHistory(uid:int) -> renders
 ```
 
 - Envoke SQL procedure and send table and uid as context
 
-##### *Feed back (passenger driver)
+##### Feed back (passenger driver)
 ```python
 FeedBack(uid:int) -> renders
 ```
 
 - Takes in input from user and redirects to home page
 
-##### *Get Live Location (passenger and authority)
+##### Get Live Location (passenger and authority)
 ```python
 GetLiveLocation(bid:int) -> render
 ```
 
 renders map page with (bus object, latitude ,longitude) tuple as context
 
-##### *Update Live Location (driver and authority)
+##### Update Live Location (driver and authority)
 ```python
 UpdateLiveLocation(bid:int,lat:float,long:float) -> render
 ```
@@ -176,12 +125,12 @@ UpdateLiveLocation(bid:int,lat:float,long:float) -> render
 - renders map page with (bus object, latitude ,longitude) tuple as context
 
 
-##### *Penalty details (passenger and autority)
+##### Penalty details (passenger and autority)
 ```python
 Penalties(uid:int) -> render
 ```
 
-##### *Generate Ticket (passenger authority)
+##### Generate Ticket (passenger authority)
 ```python
 GenerateTicket(bid:int) -> render
 ```
@@ -189,7 +138,7 @@ GenerateTicket(bid:int) -> render
 - get details of booking
 - generate QR
 
-##### *Verify Ticket (driver)
+##### Verify Ticket (driver)
 ```python
 VerifyTicket(uid:int,qrimage:blob) -> redirects
 ```
@@ -201,7 +150,7 @@ VerifyTicket(uid:int,qrimage:blob) -> redirects
 - if not there, alert
 - if there mark-boarding-status
 
-##### *Mark boarding (driver)
+##### Mark boarding (driver)
 ```python
 MarkBoarding(BookingID) -> renders
 ```
@@ -216,3 +165,7 @@ MarkBoarding(BookingID) -> renders
 EncodeQR(s:str) -> bitmap
 DecodeQR(qr:bitmap) -> str
 ```
+
+### Pages
+
+![pages](pages.svg)
